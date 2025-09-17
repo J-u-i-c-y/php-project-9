@@ -1,0 +1,21 @@
+{
+  "name": "hexlet/code",
+  "description": "A simple Slim application",
+  "require": {
+    "php": "^8.0",
+    "slim/slim": "^4.10",
+    "slim/psr7": "^1.4",
+    "php-di/php-di": "^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "scripts": {
+    "start": "PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^4.0"
+  }
+}
