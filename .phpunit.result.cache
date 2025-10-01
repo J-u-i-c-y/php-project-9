@@ -1,0 +1,1 @@
+{"version":2,"defects":{"Tests\\UrlsTest::testAddUrl":8,"Tests\\UrlsTest::testAddInvalidUrl":8,"Tests\\UrlsTest::testAddExistingUrl":8,"Tests\\UrlsTest::testCheckUrl":8},"times":[]}
