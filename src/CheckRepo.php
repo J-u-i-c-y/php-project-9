@@ -20,7 +20,7 @@ class CheckRepo
         $stmt = $this->conn->query($sql);
         if ($stmt) {
             while ($row = $stmt->fetch()) {
-                $check = Check::fromArray([$row['url_id'], $row['created_at'], $row['status_code']]);
+                $check = Check::fromArray([$row['url_id'], $row['created_at']]);
                 $check->setId($row['id']);
                 $checks[] = $check;
             }
