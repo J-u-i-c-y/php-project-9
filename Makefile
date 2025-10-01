@@ -10,7 +10,7 @@ clear-cache:
 	composer clear-cache
 
 lint:
-	vendor/bin/phpcs
+	vendor/bin/phpcs src
 
 clean-lint:
 	vendor/bin/phpcbf
