@@ -41,7 +41,6 @@ class ChecksRepositoryTest extends TestCase
         $this->repository = new ChecksRepository($this->pdo);
     }
 
-    // Вспомогательный метод для создания проверки
     private function createCheck(
         int $urlId = 1,
         int $statusCode = 200,
@@ -60,7 +59,6 @@ class ChecksRepositoryTest extends TestCase
         );
     }
 
-    // Сохраняем проверку и проверяем, что вернулся объект с ID
     public function testSaveReturnsCheckWithId(): void
     {
         $check = $this->createCheck();
@@ -71,7 +69,6 @@ class ChecksRepositoryTest extends TestCase
         $this->assertSame(200, $savedCheck->getStatusCode());
     }
 
-    // Проверка метода all()
     public function testAllReturnsArrayOfChecks(): void
     {
         $this->repository->save($this->createCheck(urlId: 1));
@@ -84,7 +81,6 @@ class ChecksRepositoryTest extends TestCase
         $this->assertSame(2, $allChecks[1]->getUrlId());
     }
 
-    // Проверка метода findAllByUrlId()
     public function testFindAllByUrlIdReturnsChecksForUrl(): void
     {
         $this->repository->save($this->createCheck(urlId: 1));
@@ -97,7 +93,6 @@ class ChecksRepositoryTest extends TestCase
         $this->assertSame(1, $checks[1]->getUrlId());
     }
 
-    // Проверка метода findLastCreatedAtByUrlId()
     public function testFindLastCreatedAtByUrlIdReturnsDate(): void
     {
         $check1 = $this->createCheck(urlId: 1, createdAt: Carbon::now());
@@ -109,7 +104,6 @@ class ChecksRepositoryTest extends TestCase
         $this->assertEquals($check2->getCreatedAt(), $lastDate);
     }
 
-    // Проверка метода findLastStatusCodeByUrlId()
     public function testFindLastStatusCodeByUrlIdReturnsCode(): void
     {
         $this->repository->save($this->createCheck(urlId: 1, statusCode: 200, createdAt: Carbon::now()));
