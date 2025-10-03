@@ -1,6 +1,5 @@
 {
     "name": "hexlet/code",
-    "description": "A simple Slim application",
     "require": {
         "php": "^8.0",
         "slim/slim": "^4.10",
@@ -11,7 +10,11 @@
         "vlucas/phpdotenv": "^5.6",
         "nesbot/carbon": "^2.0",
         "illuminate/support": "^11.46",
-        "imangazaliev/didom": "^2.0"
+        "imangazaliev/didom": "^2.0",
+        "slim/http": "^1.4",
+        "illuminate/collections": "^10.0",
+        "symfony/var-dumper": "^6.0",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "autoload": {
         "psr-4": {
@@ -33,6 +36,7 @@
         "squizlabs/php_codesniffer": "^4.0",
         "codeception/module-phpbrowser": "^3.0",
         "guzzlehttp/guzzle": "^7.10",
-        "phpunit/phpunit": "^12.4"
+        "phpunit/phpunit": "^12.4",
+        "phpstan/phpstan": "^2.1"
     }
 }

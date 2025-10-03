@@ -51,10 +51,11 @@
                     <?= htmlspecialchars($url->getName() ?? '') ?>
                   </a>
                 </td>
-                <td><?= htmlspecialchars($url->getCreatedAt() ?? '')?></td>
+                <td><?= htmlspecialchars($url->getLastCheckDate() ?? '')?></td>
                 <td><?= htmlspecialchars($url->getLastCheckCode() ?? '')?></td>
               </tr>
             <?php endforeach ?>
+
           </tbody>
         </table>
       </div>
