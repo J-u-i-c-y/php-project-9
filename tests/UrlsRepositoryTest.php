@@ -11,7 +11,7 @@ class UrlsRepositoryTest extends TestCase
 {
     private PDO $pdo;
     private UrlsRepository $repository;
-    private string $exampleUrl = 'https://example.com';
+    public string $exampleUrl = 'https://example.com';
 
     protected function setUp(): void
     {
@@ -29,10 +29,14 @@ class UrlsRepositoryTest extends TestCase
         $this->repository = new UrlsRepository($this->pdo);
     }
 
-    private function createUrl(string $name = $exampleUrl): Url
+    private function createUrl(?string $name = null): Url
     {
+        if ($name === null) {
+            $name = $this->exampleUrl;
+        }
         $url = new Url($name);
-        return $this->repository->save($url);
+        $this->repository->save($url);
+        return $url;
     }
 
     public function testSaveReturnsUrlWithId(): void
