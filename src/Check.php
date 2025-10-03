@@ -59,7 +59,7 @@ class Check
             }
         }
         if ($document->has('meta')) {
-            $this->setDescription(optional($document->first('meta[name=description]'))->getAttribute('content'));
+            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content') ?? null);
         }
 
         return $this;
