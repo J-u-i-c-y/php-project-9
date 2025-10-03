@@ -11,6 +11,7 @@ class UrlsRepositoryTest extends TestCase
 {
     private PDO $pdo;
     private UrlsRepository $repository;
+    private string $exampleUrl = 'https://example.com';
 
     protected function setUp(): void
     {
@@ -28,7 +29,7 @@ class UrlsRepositoryTest extends TestCase
         $this->repository = new UrlsRepository($this->pdo);
     }
 
-    private function createUrl(string $name = 'https://example.com'): Url
+    private function createUrl(string $name = $exampleUrl): Url
     {
         $url = new Url($name);
         return $this->repository->save($url);
@@ -39,7 +40,7 @@ class UrlsRepositoryTest extends TestCase
         $savedUrl = $this->createUrl();
 
         $this->assertNotNull($savedUrl->getId());
-        $this->assertSame('https://example.com', $savedUrl->getName());
+        $this->assertSame($exampleUrl, $savedUrl->getName());
     }
 
     public function testFindExistingUrl(): void
@@ -61,9 +62,9 @@ class UrlsRepositoryTest extends TestCase
     {
         $this->createUrl();
 
-        $foundUrl = $this->repository->findByName('https://example.com');
+        $foundUrl = $this->repository->findByName($exampleUrl);
         $this->assertNotNull($foundUrl);
-        $this->assertSame('https://example.com', $foundUrl->getName());
+        $this->assertSame($exampleUrl, $foundUrl->getName());
 
         $this->assertNull($this->repository->findByName('https://nonexistent.com'));
     }

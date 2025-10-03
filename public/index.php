@@ -11,7 +11,7 @@ use Hexlet\Code\UrlNormalize;
 use Hexlet\Code\Check;
 use Hexlet\Code\CheckRepo;
 
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 session_start();
 
@@ -68,7 +68,7 @@ $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get(
     '/',
-    function ($req, $res) {
+    function ($res) {
         return $this->get('renderer')->render($res, 'index.phtml');
     }
 )->setName('urls.index');
@@ -111,7 +111,7 @@ $app->post(
 
 $app->get(
     '/urls',
-    function ($req, $res) {
+    function ($res) {
         $urlRepo = $this->get(UrlRepo::class);
         $urls = $urlRepo->getEntities();
         $params = ['urls' => $urls];
@@ -122,7 +122,7 @@ $app->get(
 
 $app->get(
     '/urls/{id}',
-    function ($req, $res, $args) {
+    function ($res, $args) {
         $urlRepo = $this->get(UrlRepo::class);
         $id = $args['id'];
         $url = $urlRepo->find($id);
@@ -142,7 +142,7 @@ $app->get(
 
 $app->post(
     '/urls/{url_id}/checks',
-    function ($req, $res, $args) use ($router) {
+    function ($res, $args) use ($router) {
         $urlId = $args['url_id'];
         $check = Check::fromArray([$urlId]);
         $checkRepo = $this->get(CheckRepo::class);

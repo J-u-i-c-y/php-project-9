@@ -7,6 +7,8 @@ class UrlValidator
     public function validate(array $urlData): array
     {
         $errors = [];
+        $wrongEmail = "Некорректный URL";
+
         $url = parse_url($urlData['name']);
         $scheme = $url['scheme'] ?? '';
         $host = $url['host'] ?? '';
@@ -16,15 +18,15 @@ class UrlValidator
         }
 
         if (empty($scheme) || empty($host)) {
-            $errors[] = 'Некорректный URL';
+            $errors[] = $wrongEmail;
         }
 
         if ($scheme !== 'http' && $scheme !== 'https') {
-            $errors[] = 'Некорректный URL';
+            $errors[] = $wrongEmail;
         }
 
         if (!str_starts_with($urlData['name'], 'http://') && !str_starts_with($urlData['name'], 'https://')) {
-            $errors[] = 'Некорректный URL';
+            $errors[] = $wrongEmail;
         }
 
         return $errors;

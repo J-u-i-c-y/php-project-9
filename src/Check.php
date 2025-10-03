@@ -11,7 +11,7 @@ class Check
     private ?int $id = null;
     private ?int $urlId = null;
     private ?string $createdAt = null;
-    private ?int $status_code = null;
+    private ?int $statusCode = null;
     private ?string $h1 = null;
     private ?string $title = null;
     private ?string $description = null;
@@ -34,8 +34,7 @@ class Check
         } catch (GuzzleException $e) {
             return null;
         }
-        $statusCode = $response->getStatusCode();
-        $this->setStatusCode($statusCode);
+        $this->setStatusCode($response->getStatusCode());
 
         return $this;
     }
@@ -105,9 +104,9 @@ class Check
         $this->id = $id;
     }
 
-    public function setStatusCode(?int $status_code): void
+    public function setStatusCode(?int $statusCode): void
     {
-        $this->status_code = $status_code;
+        $this->status_code = $statusCode;
     }
 
     public function setCreatedAt(?string $createdAt): void

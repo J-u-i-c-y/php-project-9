@@ -32,7 +32,7 @@ class UrlValidatorTest extends TestCase
 
     public function testUrlExceedsMaxLengthReturnsError()
     {
-        $longUrl = 'http://' . str_repeat('a', 250) . '.com';
+        $longUrl = 'https://' . str_repeat('a', 250) . '.com';
         $data = ['name' => $longUrl];
         $errors = UrlValidator::validate($data);
         $this->assertNotEmpty($errors);

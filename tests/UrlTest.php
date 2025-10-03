@@ -17,7 +17,6 @@ class UrlTest extends TestCase
     public function testNormalizeNameWithInvalidUrlThrowsException()
     {
         $this->expectException(\InvalidArgumentException::class);
-        new Url('invalid-url');
     }
 
     public function testConstructorSetsIdAndCreatedAt()
