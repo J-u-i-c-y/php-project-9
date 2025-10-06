@@ -34,8 +34,7 @@ class Check
         } catch (GuzzleException $e) {
             return null;
         }
-        $statusCode = $response->getStatusCode();
-        $this->setStatusCode($statusCode);
+       $this->setStatusCode($response->getStatusCode());
 
         return $this;
     }
@@ -59,7 +58,7 @@ class Check
             }
         }
         if ($document->has('meta')) {
-            $this->setDescription(optional($document->first('meta[name=description]'))->getAttribute('content'));
+            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content') ?? null);
         }
 
         return $this;
