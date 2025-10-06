@@ -11,6 +11,7 @@ class Check
     private ?int $id = null;
     private ?int $urlId = null;
     private ?string $createdAt = null;
+    private ?int $status_code = null;
     private ?string $h1 = null;
     private ?string $title = null;
     private ?string $description = null;
@@ -33,7 +34,8 @@ class Check
         } catch (GuzzleException $e) {
             return null;
         }
-        $this->setStatusCode($response->getStatusCode());
+        $statusCode = $response->getStatusCode();
+        $this->setStatusCode($statusCode);
 
         return $this;
     }
@@ -57,7 +59,7 @@ class Check
             }
         }
         if ($document->has('meta')) {
-            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content') ?? null);
+            $this->setDescription(optional($document->first('meta[name=description]'))->getAttribute('content'));
         }
 
         return $this;
@@ -103,9 +105,9 @@ class Check
         $this->id = $id;
     }
 
-    public function setStatusCode(?int $statusCode): void
+    public function setStatusCode(?int $status_code): void
     {
-        $this->status_code = $statusCode;
+        $this->status_code = $status_code;
     }
 
     public function setCreatedAt(?string $createdAt): void

@@ -10,8 +10,12 @@ use Hexlet\Code\UrlValidator;
 use Hexlet\Code\UrlNormalize;
 use Hexlet\Code\Check;
 use Hexlet\Code\CheckRepo;
+use Dotenv\Dotenv;
 
 require_once __DIR__ . '/../vendor/autoload.php';
+
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
 session_start();
 
@@ -32,22 +36,22 @@ $container->set(
 $container->set(
     \PDO::class,
     function () {
-        $databaseUrl = parse_url($_ENV['DATABASE_URL'] ?? '');
+        $databaseUrl = parse_url($_ENV['DATABASE_URL']);
 
-        $host = $databaseUrl['host'] ?? '127.0.0.1';
+        $host = $databaseUrl['host'];
         $port = $databaseUrl['port'] ?? '5432';
-        $dbname = ltrim($databaseUrl['path'] ?? '', '/');
-        $user = $databaseUrl['user'] ?? 'postgres';
-        $password = $databaseUrl['pass'] ?? '';
-
+        $dbname = ltrim($databaseUrl['path'], '/');
+        $user = $databaseUrl['user'];
+        $password = $databaseUrl['pass'];
         $conStr = sprintf(
-            "pgsql:host=%s;port=%d;dbname=%s",
+            "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
             $host,
             $port,
-            $dbname
+            $dbname,
+            $user,
+            $password
         );
-
-        $conn = new \PDO($conStr, $user, $password);
+        $conn = new \PDO($conStr);
         $conn->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
         return $conn;
     }
@@ -68,7 +72,7 @@ $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get(
     '/',
-    function ($res) {
+    function ($req, $res) {
         return $this->get('renderer')->render($res, 'index.phtml');
     }
 )->setName('urls.index');
@@ -111,7 +115,7 @@ $app->post(
 
 $app->get(
     '/urls',
-    function ($res) {
+    function ($req, $res) {
         $urlRepo = $this->get(UrlRepo::class);
         $urls = $urlRepo->getEntities();
         $params = ['urls' => $urls];
@@ -122,7 +126,7 @@ $app->get(
 
 $app->get(
     '/urls/{id}',
-    function ($res, $args) {
+    function ($req, $res, $args) {
         $urlRepo = $this->get(UrlRepo::class);
         $id = $args['id'];
         $url = $urlRepo->find($id);
@@ -142,7 +146,7 @@ $app->get(
 
 $app->post(
     '/urls/{url_id}/checks',
-    function ($res, $args) use ($router) {
+    function ($req, $res, $args) use ($router) {
         $urlId = $args['url_id'];
         $check = Check::fromArray([$urlId]);
         $checkRepo = $this->get(CheckRepo::class);

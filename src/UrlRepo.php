@@ -84,7 +84,7 @@ class UrlRepo
         $stmt = $this->conn->prepare($sql);
         $id = $url->getId();
         $name = $url->getName();
-        $stmt->bindParam($nameParam, $name);
+        $stmt->bindParam($this->nameParam, $name);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
     }
@@ -97,7 +97,7 @@ class UrlRepo
         $sql = "INSERT INTO urls (name, created_at) VALUES (:name, :created_at)";
         $stmt = $this->conn->prepare($sql);
         $name = $url->getName();
-        $stmt->bindParam($nameParam, $name);
+        $stmt->bindParam($this->nameParam, $name);
         $stmt->bindParam(':created_at', $dateFormated);
         $stmt->execute();
         $id = (int) $this->conn->lastInsertId();
@@ -109,7 +109,7 @@ class UrlRepo
         $sql = "SELECT * FROM urls WHERE name = :name";
         $stmt = $this->conn->prepare($sql);
         $name = $url->getName();
-        $stmt->bindParam($nameParam, $name);
+        $stmt->bindParam($this->nameParam, $name);
         $stmt->execute();
         $urls = $stmt->fetch();
 
