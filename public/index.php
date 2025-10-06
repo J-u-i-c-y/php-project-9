@@ -32,22 +32,22 @@ $container->set(
 $container->set(
     \PDO::class,
     function () {
-        $databaseUrl = parse_url($_ENV['DATABASE_URL']);
+        $databaseUrl = parse_url($_ENV['DATABASE_URL'] ?? '');
 
-        $host = $databaseUrl['host'];
+        $host = $databaseUrl['host'] ?? '127.0.0.1';
         $port = $databaseUrl['port'] ?? '5432';
-        $dbname = ltrim($databaseUrl['path'], '/');
-        $user = $databaseUrl['user'];
-        $password = $databaseUrl['pass'];
+        $dbname = ltrim($databaseUrl['path'] ?? '', '/');
+        $user = $databaseUrl['user'] ?? 'postgres';
+        $password = $databaseUrl['pass'] ?? '';
+
         $conStr = sprintf(
-            "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
+            "pgsql:host=%s;port=%d;dbname=%s",
             $host,
             $port,
-            $dbname,
-            $user,
-            $password
+            $dbname
         );
-        $conn = new \PDO($conStr);
+
+        $conn = new \PDO($conStr, $user, $password);
         $conn->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
         return $conn;
     }
