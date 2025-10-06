@@ -34,7 +34,8 @@ class Check
         } catch (GuzzleException $e) {
             return null;
         }
-       $this->setStatusCode($response->getStatusCode());
+        
+        $this->setStatusCode($response->getStatusCode());
 
         return $this;
     }
