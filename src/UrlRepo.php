@@ -18,9 +18,12 @@ class UrlRepo
     {
         $sqlUrls = "SELECT id, name, created_at FROM urls ORDER BY id";
         $stmt = $this->conn->query($sqlUrls);
-        $urls = [];
+        if ($stmt === false) {
+            throw new \RuntimeException('Ошибка запроса к базе данных');
+        }
 
-        while ($row = $stmt->fetch()) {
+        $urls = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $url = Url::fromArray([$row['name']]);
             $url->setId($row['id']);
             $url->setCreatedAt(new Carbon($row['created_at']));
@@ -32,14 +35,17 @@ class UrlRepo
         }
 
         $sqlChecks = "
-            SELECT DISTINCT ON (url_id)
-                url_id, status_code, created_at
+            SELECT DISTINCT url_id, status_code, created_at
             FROM url_checks
             ORDER BY url_id, created_at DESC
         ";
         $stmtChecks = $this->conn->query($sqlChecks);
+        
+        if ($stmtChecks === false) {
+            throw new \RuntimeException('Ошибка запроса к базе данных');
+        }
 
-        while ($row = $stmtChecks->fetch()) {
+        while ($row = $stmtChecks->fetch(\PDO::FETCH_ASSOC)) {
             $urlId = $row['url_id'];
             if (isset($urls[$urlId])) {
                 $urls[$urlId]->setLastCheckCode($row['status_code']);
@@ -106,8 +112,11 @@ class UrlRepo
     public function findByName(string $name): ?Url
     {
         $stmt = $this->conn->prepare("SELECT * FROM urls WHERE name = :name");
+        if ($stmt === false) {
+            throw new \RuntimeException('Ошибка подготовки запроса SQL');
+        }
         $stmt->execute(['name' => Url::normalizeName($name)]);
-        $row = $stmt->fetch();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row) {
             return new Url(
                 $row['name'],

@@ -42,40 +42,36 @@ class Check
         return new self($urlId);
     }
 
-    public function checkStatus(string $urlName): ?Check
+    public function checkStatus(string $urlName): ?self
     {
         $client = new Client(['timeout' => 6]);
-
-        $body = null;
-        $status = null;
 
         try {
             $response = $client->request('GET', $urlName);
 
-            if ($response === null) {
-                return null;
-            }
+            $this->setStatusCode($response->getStatusCode());
 
-            $status = $response->getStatusCode();
             $body = (string) $response->getBody();
+            $document = new Document($body);
+
+            $this->setH1($document->first('h1')?->text() ?? null);
+            $this->setTitle($document->first('title')?->text() ?? null);
+            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content'));
+
         } catch (ConnectException $e) {
             return null;
         } catch (RequestException $e) {
-            $status = $e->hasResponse() ? $e->getResponse()->getStatusCode() : null;
+            $this->setStatusCode($e->hasResponse() ? $e->getResponse()->getStatusCode() : null);
+
             $body = $e->hasResponse() ? (string) $e->getResponse()->getBody() : null;
+            if ($body) {
+                $document = new Document($body);
+                $this->setH1($document->first('h1')?->text() ?? null);
+                $this->setTitle($document->first('title')?->text() ?? null);
+                $this->setDescription($document->first('meta[name=description]')?->getAttribute('content'));
+            }
         } catch (\Exception $e) {
             return null;
-        }
-
-        $this->setStatusCode($status);
-
-        if ($body) {
-            $document = new Document($body);
-            $h1Element = $document->first('h1');
-            $this->setH1($h1Element instanceof \DiDom\Element ? $h1Element->text() : null);
-            $titleElement = $document->first('title');
-            $this->setTitle($titleElement instanceof \DiDom\Element ? $titleElement->text() : null);
-            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content'));
         }
 
         return $this;

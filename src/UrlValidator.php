@@ -8,10 +8,6 @@ class UrlValidator
 {
     public static function validate(array $urlData): array
     {
-        if (!is_array($urlData) || !isset($urlData['name'])) {
-            return ['Некорректные данные'];
-        }
-
         $v = new Validator($urlData);
         $v->rule('required', 'name')->message('URL не должен быть пустым');
         $v->rule('url', 'name')->message('Некорректный URL');
@@ -19,7 +15,7 @@ class UrlValidator
 
         if (!$v->validate()) {
             $errors = $v->errors();
-            return count($errors) ? array_merge(...array_values($errors)) : [];
+            return array_merge(...$errors);
         }
 
         return [];
