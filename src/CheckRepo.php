@@ -53,7 +53,7 @@ class CheckRepo
 
         return $this->createCheckFromRow($row);
     }
-    
+
     public function all(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM url_checks ORDER BY created_at DESC');

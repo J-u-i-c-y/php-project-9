@@ -75,21 +75,67 @@ class Check
     }
 
 
-    public function getId(): ?int { return $this->id; }
-    public function getUrlId(): int { return $this->urlId; }
-    public function getStatusCode(): ?int { return $this->statusCode; }
-    public function getH1(): ?string { return $this->h1; }
-    public function getTitle(): ?string { return $this->title; }
-    public function getDescription(): ?string { return $this->description; }
-    public function getCreatedAt(): Carbon { return $this->createdAt; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function setId(int $id): void { $this->id = $id; }
-    public function setUrlId(int $urlId): void { $this->urlId = $urlId; }
-    public function setStatusCode(?int $statusCode): void { $this->statusCode = $statusCode; }
-    public function setH1(?string $h1): void { $this->h1 = $h1; }
-    public function setTitle(?string $title): void { $this->title = $title; }
-    public function setDescription(?string $description): void { $this->description = $description; }
-    public function setCreatedAt(Carbon $createdAt): void { $this->createdAt = $createdAt; }
+    public function getUrlId(): int
+    {
+        return $this->urlId;
+    }
+    public function getStatusCode(): ?int
+    {
+        return $this->statusCode;
+    }
+    public function getH1(): ?string
+    {
+        return $this->h1;
+    }
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+    public function getCreatedAt(): Carbon
+    {
+        return $this->createdAt;
+    }
 
-    public function exists(): bool { return $this->id !== null; }
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+    public function setUrlId(int $urlId): void
+    {
+        $this->urlId = $urlId;
+    }
+    public function setStatusCode(?int $statusCode): void
+    {
+        $this->statusCode = $statusCode;
+    }
+    public function setH1(?string $h1): void
+    {
+        $this->h1 = $h1;
+    }
+    public function setTitle(?string $title): void
+    {
+        $this->title = $title;
+    }
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
+    }
+    public function setCreatedAt(Carbon $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function exists(): bool
+    {
+        return $this->id !== null;
+    }
 }
