@@ -101,7 +101,7 @@ $app->post(
         $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     }
 
-    return $res->withRedirect($router->urlFor('urls.show', ['id' => $url->getId()]));
+    return $res->withRedirect($router->urlFor('urls.show', ['id' => (string)$url->getId()]));
 })->setName('urls.create');
 
 $app->get(
@@ -152,13 +152,13 @@ $app->post(
 
         if (is_null($performedCheck)) {
             $this->get('flash')->addMessage('error', 'Произошла ошибка при проверке, не удалось подключиться');
-            return $res->withRedirect($router->urlFor('urls.show', ['id' => $urlId]));
+            return $res->withRedirect($router->urlFor('urls.show', ['id' => (string)$urlId]));
         }
 
         $checkRepo->save($performedCheck);
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
 
-        return $res->withRedirect($router->urlFor('urls.show', ['id' => $urlId]));
+        return $res->withRedirect($router->urlFor('urls.show', ['id' => (string)$urlId]));
     }
 )->setName('urls.checks.create');
 

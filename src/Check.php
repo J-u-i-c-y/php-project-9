@@ -51,6 +51,11 @@ class Check
 
         try {
             $response = $client->request('GET', $urlName);
+
+            if ($response === null) {
+                return null;
+            }
+
             $status = $response->getStatusCode();
             $body = (string) $response->getBody();
         } catch (ConnectException $e) {
@@ -66,8 +71,10 @@ class Check
 
         if ($body) {
             $document = new Document($body);
-            $this->setH1($document->first('h1')?->text());
-            $this->setTitle($document->first('title')?->text());
+            $h1Element = $document->first('h1');
+            $this->setH1($h1Element instanceof \DiDom\Element ? $h1Element->text() : null);
+            $titleElement = $document->first('title');
+            $this->setTitle($titleElement instanceof \DiDom\Element ? $titleElement->text() : null);
             $this->setDescription($document->first('meta[name=description]')?->getAttribute('content'));
         }
 

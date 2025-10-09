@@ -54,6 +54,9 @@ class UrlRepo
     {
         $sql = "SELECT * FROM urls WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
+        if (!$stmt) {
+            throw new \RuntimeException('Ошибка подготовки запроса SQL');
+        }
         $stmt->execute([$id]);
         if ($row = $stmt->fetch()) {
             $url = Url::fromArray([$row['name']]);

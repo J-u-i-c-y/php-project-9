@@ -8,14 +8,18 @@ class UrlValidator
 {
     public static function validate(array $urlData): array
     {
+        if (!is_array($urlData) || !isset($urlData['name'])) {
+            return ['Некорректные данные'];
+        }
+
         $v = new Validator($urlData);
         $v->rule('required', 'name')->message('URL не должен быть пустым');
         $v->rule('url', 'name')->message('Некорректный URL');
         $v->rule('lengthMax', 'name', 255)->message('URL не должен превышать 255 символов');
 
         if (!$v->validate()) {
-            // Возвращаем просто список ошибок
-            return array_merge(...array_values($v->errors()));
+            $errors = $v->errors();
+            return count($errors) ? array_merge(...array_values($errors)) : [];
         }
 
         return [];
