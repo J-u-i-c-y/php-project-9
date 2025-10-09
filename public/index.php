@@ -81,38 +81,28 @@ $app->get(
 $app->post(
     '/urls',
     function ($req, $res) use ($router) {
-        $urlRepo = $this->get(UrlRepo::class);
-        $urlData = $req->getParsedBodyParam('url');
-        $validator = new UrlValidator();
-        $errors = $validator->validate($urlData);
+    $urlRepo = $this->get(UrlRepo::class);
+    $urlData = $req->getParsedBodyParam('url');
+    $errors = UrlValidator::validate($urlData);
 
-        if (count($errors) === 0) {
-            $normalize = new UrlNormalize();
-            $urlData['name'] = $normalize->normalize($urlData['name']);
-            $url = Url::fromArray([$urlData['name']]);
-
-            if ($urlRepo->isNameExists($url)) {
-                $id = $url->getId();
-                $this->get('flash')->addMessage('success', 'Страница уже существует');
-
-                return $res->withRedirect($router->urlFor('urls.show', ['id' => "$id"]));
-            }
-
-            $urlRepo->save($url);
-            $id = $url->getId();
-            $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
-
-            return $res->withRedirect($router->urlFor('urls.show', ['id' => "$id"]));
-        }
-
-        $params = [
-            'urlData' => $urlData,
-            'errors' => $errors
-        ];
-
+    if (!empty($errors)) {
+        $params = ['urlData' => $urlData, 'errors' => $errors];
         return $this->get('renderer')->render($res->withStatus(422), 'index.phtml', $params);
     }
-);
+
+    $normalize = new UrlNormalize();
+    $urlData['name'] = $normalize->normalize($urlData['name']);
+    $url = Url::fromArray([$urlData['name']]);
+
+    if ($urlRepo->isNameExists($url)) {
+        $this->get('flash')->addMessage('success', 'Страница уже существует');
+    } else {
+        $urlRepo->save($url);
+        $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
+    }
+
+    return $res->withRedirect($router->urlFor('urls.show', ['id' => $url->getId()]));
+})->setName('urls.create');
 
 $app->get(
     '/urls',
@@ -137,7 +127,7 @@ $app->get(
         }
 
         $checkRepo = $this->get(CheckRepo::class);
-        $checks = $checkRepo->findByUrlId($id);
+        $checks = $checkRepo->findAllByUrlId($id);
         $flash = $this->get('flash')->getMessages();
         $params = ['url' => $url, 'flash' => $flash, 'checks' => $checks];
 
@@ -149,24 +139,28 @@ $app->post(
     '/urls/{url_id}/checks',
     function ($req, $res, $args) use ($router) {
         $urlId = $args['url_id'];
-        $check = Check::fromArray([$urlId]);
-        $checkRepo = $this->get(CheckRepo::class);
         $urlRepo = $this->get(UrlRepo::class);
+        $checkRepo = $this->get(CheckRepo::class);
+
         $url = $urlRepo->find($urlId);
-        $checkWithRequestStatus = $check->checkStatus($url->getName());
+        if (is_null($url)) {
+            return $res->withStatus(404);
+        }
 
-        if (is_null($checkWithRequestStatus)) {
+        $check = Check::fromArray([$urlId]);
+        $performedCheck = $check->checkStatus($url->getName());
+
+        if (is_null($performedCheck)) {
             $this->get('flash')->addMessage('error', 'Произошла ошибка при проверке, не удалось подключиться');
-
             return $res->withRedirect($router->urlFor('urls.show', ['id' => $urlId]));
         }
 
-        $parsedCheck = $checkWithRequestStatus->parseHtml($url->getName());
-        $checkRepo->save($parsedCheck);
+        $checkRepo->save($performedCheck);
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
 
         return $res->withRedirect($router->urlFor('urls.show', ['id' => $urlId]));
     }
-);
+)->setName('urls.checks.create');
+
 
 $app->run();

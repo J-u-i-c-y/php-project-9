@@ -3,139 +3,93 @@
 namespace Hexlet\Code;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ConnectException;
 use DiDom\Document;
+use Carbon\Carbon;
 
 class Check
 {
-    private ?int $id = null;
-    private ?int $urlId = null;
-    private ?string $createdAt = null;
-    private ?int $status_code = null;
-    private ?string $h1 = null;
-    private ?string $title = null;
-    private ?string $description = null;
+    private ?int $id;
+    private int $urlId;
+    private ?int $statusCode;
+    private ?string $h1;
+    private ?string $title;
+    private ?string $description;
+    private Carbon $createdAt;
+
+    public function __construct(
+        int $urlId,
+        ?int $id = null,
+        ?int $statusCode = null,
+        ?string $h1 = null,
+        ?string $title = null,
+        ?string $description = null,
+        ?Carbon $createdAt = null
+    ) {
+        $this->urlId = $urlId;
+        $this->id = $id;
+        $this->statusCode = $statusCode;
+        $this->h1 = $h1;
+        $this->title = $title;
+        $this->description = $description;
+        $this->createdAt = $createdAt ?? Carbon::now();
+    }
 
     public static function fromArray(array $checkData): Check
     {
         [$urlId] = $checkData;
-        $check = new Check();
-        $check->setUrlId($urlId);
-
-        return $check;
+        return new self($urlId);
     }
 
     public function checkStatus(string $urlName): ?Check
     {
-        $client = new Client();
+        $client = new Client(['timeout' => 6]);
+
+        $body = null;
+        $status = null;
 
         try {
-            $response = $client->request('GET', $urlName, ['connect_timeout' => 6]);
-        } catch (GuzzleException $e) {
+            $response = $client->request('GET', $urlName);
+            $status = $response->getStatusCode();
+            $body = (string) $response->getBody();
+        } catch (ConnectException $e) {
+            return null;
+        } catch (RequestException $e) {
+            $status = $e->hasResponse() ? $e->getResponse()->getStatusCode() : null;
+            $body = $e->hasResponse() ? (string) $e->getResponse()->getBody() : null;
+        } catch (\Exception $e) {
             return null;
         }
-        $this->setStatusCode($response->getStatusCode());
 
-        return $this;
-    }
+        $this->setStatusCode($status);
 
-    public function parseHtml(string $urlName): ?Check
-    {
-        $document = new Document($urlName, true);
-
-        if ($document->has('h1')) {
-            $doc = $document->first('h1');
-            if ($doc instanceof \DiDom\Element) {
-                $h1 = trim($doc->text());
-                $this->setH1($h1);
-            }
-        }
-        if ($document->has('title')) {
-            $doc = $document->first('title');
-            if ($doc instanceof \DiDom\Element) {
-                $title = trim($doc->text());
-                $this->setTitle($title);
-            }
-        }
-        if ($document->has('meta')) {
-            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content') ?? null);
+        if ($body) {
+            $document = new Document($body);
+            $this->setH1($document->first('h1')?->text());
+            $this->setTitle($document->first('title')?->text());
+            $this->setDescription($document->first('meta[name=description]')?->getAttribute('content'));
         }
 
         return $this;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
-    public function getUrlid(): ?int
-    {
-        return $this->urlId;
-    }
+    public function getId(): ?int { return $this->id; }
+    public function getUrlId(): int { return $this->urlId; }
+    public function getStatusCode(): ?int { return $this->statusCode; }
+    public function getH1(): ?string { return $this->h1; }
+    public function getTitle(): ?string { return $this->title; }
+    public function getDescription(): ?string { return $this->description; }
+    public function getCreatedAt(): Carbon { return $this->createdAt; }
 
-    public function getStatusCode(): ?int
-    {
-        return $this->status_code;
-    }
+    public function setId(int $id): void { $this->id = $id; }
+    public function setUrlId(int $urlId): void { $this->urlId = $urlId; }
+    public function setStatusCode(?int $statusCode): void { $this->statusCode = $statusCode; }
+    public function setH1(?string $h1): void { $this->h1 = $h1; }
+    public function setTitle(?string $title): void { $this->title = $title; }
+    public function setDescription(?string $description): void { $this->description = $description; }
+    public function setCreatedAt(Carbon $createdAt): void { $this->createdAt = $createdAt; }
 
-    public function getCreatedAt(): ?string
-    {
-        return $this->createdAt;
-    }
-
-    public function getH1(): ?string
-    {
-        return $this->h1;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function setStatusCode(?int $status_code): void
-    {
-        $this->status_code = $status_code;
-    }
-
-    public function setCreatedAt(?string $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    public function setUrlId(?int $urlId): void
-    {
-        $this->urlId = $urlId;
-    }
-
-    public function setH1(?string $h1): void
-    {
-        $this->h1 = $h1;
-    }
-
-    public function setTitle(?string $title): void
-    {
-        $this->title = $title;
-    }
-
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
-    }
-
-    public function exists(): bool
-    {
-        return !is_null($this->getId());
-    }
+    public function exists(): bool { return $this->id !== null; }
 }

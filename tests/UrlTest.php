@@ -14,9 +14,10 @@ class UrlTest extends TestCase
         $this->assertEquals('https://example.com', $url->getName());
     }
 
-    public function testNormalizeNameWithInvalidUrlThrowsException()
+    public function testNormalizeNameWithInvalidUrlThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
+        Url::normalizeName('invalid-url');
     }
 
     public function testConstructorSetsIdAndCreatedAt()

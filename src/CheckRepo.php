@@ -6,71 +6,95 @@ use Carbon\Carbon;
 
 class CheckRepo
 {
-    private \PDO $conn;
+    private \PDO $pdo;
 
     public function __construct(\PDO $conn)
     {
-        $this->conn = $conn;
+        $this->pdo = $conn;
     }
 
-    public function getEntities(): array
+    protected function createCheckFromRow(array $row): Check
     {
-        $checks = [];
-        $sql = "SELECT * FROM url_checks";
-        $stmt = $this->conn->query($sql);
-        if ($stmt) {
-            while ($row = $stmt->fetch()) {
-                $check = Check::fromArray([$row['url_id'], $row['created_at']]);
-                $check->setId($row['id']);
-                $checks[] = $check;
-            }
+        return new Check(
+            urlId: (int) $row['url_id'],
+            id: (int) $row['id'],
+            statusCode: $row['status_code'] !== null ? (int) $row['status_code'] : null,
+            h1: $row['h1'],
+            title: $row['title'],
+            description: $row['description'],
+            createdAt: new Carbon($row['created_at'])
+        );
+    }
+
+    public function save(Check $check): Check
+    {
+        $sql = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
+            VALUES (:url_id, :status_code, :h1, :title, :description, :created_at)';
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            'url_id' => $check->getUrlId(),
+            'status_code' => $check->getStatusCode(),
+            'h1' => $check->getH1(),
+            'title' => $check->getTitle(),
+            'description' => $check->getDescription(),
+            'created_at' => new \Carbon\Carbon($check->getCreatedAt()),
+        ]);
+
+        $row = [
+        'url_id' => $check->getUrlId(),
+        'id' => (int) $this->pdo->lastInsertId(),
+        'status_code' => $check->getStatusCode(),
+        'h1' => $check->getH1(),
+        'title' => $check->getTitle(),
+        'description' => $check->getDescription(),
+        'created_at' => $check->getCreatedAt(),
+        ];
+
+        return $this->createCheckFromRow($row);
+    }
+    
+    public function all(): array
+    {
+        $stmt = $this->pdo->query('SELECT * FROM url_checks ORDER BY created_at DESC');
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return array_map(fn($row) => $this->createCheckFromRow($row), $rows);
+    }
+
+    public function findAllByUrlId(int $urlId): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC');
+        $stmt->execute(['url_id' => $urlId]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map(fn($row) => $this->createCheckFromRow($row), $rows);
+    }
+
+    public function findLastCreatedAtByUrlId(int $urlId): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC LIMIT 1');
+        $stmt->execute(['url_id' => $urlId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            return null;
         }
 
-        return $checks;
+        $check = $this->createCheckFromRow($row);
+        return $check->getCreatedAt();
     }
 
-    public function findByUrlId(int $urlId): array
+    public function findLastStatusCodeByUrlId(int $urlId): ?int
     {
-        $checks = [];
-        $sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$urlId]);
+        $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC LIMIT 1');
+        $stmt->execute(['url_id' => $urlId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        while ($row = $stmt->fetch()) {
-            $check = Check::fromArray([$row['url_id']]);
-            $check->setId($row['id']);
-            $check->setCreatedAt($row['created_at']);
-            $check->setStatusCode($row['status_code']);
-            $check->setH1($row['h1']);
-            $check->setTitle($row['title']);
-            $check->setDescription($row['description']);
-            $checks[] = $check;
+        if (!$row) {
+            return null;
         }
 
-        return $checks;
-    }
-
-    public function save(Check $check): void
-    {
-        $date = Carbon::now();
-        $dateFormated = $date->format('Y-m-d H:i:s');
-
-        $sql = "INSERT INTO url_checks (url_id, created_at, status_code, h1, title, description)
-                    VALUES (:url_id, :created_at, :status_code, :h1, :title, :description)";
-        $stmt = $this->conn->prepare($sql);
-        $urlId = $check->getUrlId();
-        $stmt->bindParam(':url_id', $urlId);
-        $stmt->bindParam(':created_at', $dateFormated);
-        $statusCode = $check->getStatusCode();
-        $stmt->bindParam(':status_code', $statusCode);
-        $h1 = $check->getH1();
-        $stmt->bindParam(':h1', $h1);
-        $title = $check->getTitle();
-        $stmt->bindParam(':title', $title);
-        $description = $check->getDescription();
-        $stmt->bindParam(':description', $description);
-        $stmt->execute();
-        $id = (int) $this->conn->lastInsertId();
-        $check->setId($id);
+        $check = $this->createCheckFromRow($row);
+        return $check->getStatusCode();
     }
 }

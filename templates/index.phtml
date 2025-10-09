@@ -31,7 +31,7 @@
         <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
           <h1 class="display-3">Анализатор страниц</h1>
           <p class="lead">Бесплатно проверяйте сайты на SEO пригодность</p>
-          <form action="/urls" class="row" method="post" required="">
+          <form action="/urls" class="row" method="post">
             <div class="col-8">
               <label for="text" class="visually-hidden">Url для проверки</label>
               <input type="text" name="url[name]" value="<?= $urlData['name'] ?? '' ?>" class="form-control form-control-lg <?= isset($errors) ? 'is-invalid' : '' ?>" placeholder="https://www.example.com">
@@ -40,7 +40,7 @@
               <?php endif ?>
             </div>
             <div class="col-2">
-              <input type="submit" class="btn btn-primary btn-lg ms-3 px-5 text-uppercase mx-3" value="Проверить">
+              <input type="submit" class="btn btn-primary btn-lg text-uppercase px-5" value="Проверить">
             </div>
           </form>
         </div>

@@ -4,14 +4,14 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 use Hexlet\Code\Check;
-use Hexlet\Code\ChecksRepository;
+use Hexlet\Code\CheckRepo;
 use PDO;
 use Carbon\Carbon;
 
-class ChecksRepositoryTest extends TestCase
+class CheckRepoTest extends TestCase
 {
     private PDO $pdo;
-    private ChecksRepository $repository;
+    private CheckRepo $repo;
 
     protected function setUp(): void
     {
@@ -38,7 +38,7 @@ class ChecksRepositoryTest extends TestCase
             );
         ');
 
-        $this->repository = new ChecksRepository($this->pdo);
+        $this->repo = new CheckRepo($this->pdo);
     }
 
     private function createCheck(
@@ -62,7 +62,7 @@ class ChecksRepositoryTest extends TestCase
     public function testSaveReturnsCheckWithId(): void
     {
         $check = $this->createCheck();
-        $savedCheck = $this->repository->save($check);
+        $savedCheck = $this->repo->save($check);
 
         $this->assertNotNull($savedCheck->getId());
         $this->assertSame(1, $savedCheck->getUrlId());
@@ -71,10 +71,10 @@ class ChecksRepositoryTest extends TestCase
 
     public function testAllReturnsArrayOfChecks(): void
     {
-        $this->repository->save($this->createCheck(urlId: 1));
-        $this->repository->save($this->createCheck(urlId: 2));
+        $this->repo->save($this->createCheck(urlId: 1));
+        $this->repo->save($this->createCheck(urlId: 2));
 
-        $allChecks = $this->repository->all();
+        $allChecks = $this->repo->all();
         $this->assertIsArray($allChecks);
         $this->assertCount(2, $allChecks);
         $this->assertSame(1, $allChecks[0]->getUrlId());
@@ -83,11 +83,11 @@ class ChecksRepositoryTest extends TestCase
 
     public function testFindAllByUrlIdReturnsChecksForUrl(): void
     {
-        $this->repository->save($this->createCheck(urlId: 1));
-        $this->repository->save($this->createCheck(urlId: 1));
-        $this->repository->save($this->createCheck(urlId: 2));
+        $this->repo->save($this->createCheck(urlId: 1));
+        $this->repo->save($this->createCheck(urlId: 1));
+        $this->repo->save($this->createCheck(urlId: 2));
 
-        $checks = $this->repository->findAllByUrlId(1);
+        $checks = $this->repo->findAllByUrlId(1);
         $this->assertCount(2, $checks);
         $this->assertSame(1, $checks[0]->getUrlId());
         $this->assertSame(1, $checks[1]->getUrlId());
@@ -97,24 +97,24 @@ class ChecksRepositoryTest extends TestCase
     {
         $check1 = $this->createCheck(urlId: 1, createdAt: Carbon::now());
         $check2 = $this->createCheck(urlId: 1, createdAt: Carbon::now()->addSecond());
-        $this->repository->save($check1);
-        $this->repository->save($check2);
+        $this->repo->save($check1);
+        $this->repo->save($check2);
 
-        $lastDate = $this->repository->findLastCreatedAtByUrlId(1);
+        $lastDate = $this->repo->findLastCreatedAtByUrlId(1);
         $this->assertEquals($check2->getCreatedAt(), $lastDate);
     }
 
     public function testFindLastStatusCodeByUrlIdReturnsCode(): void
     {
-        $this->repository->save($this->createCheck(urlId: 1, statusCode: 200, createdAt: Carbon::now()));
-        $this->repository->save($this->createCheck(
+        $this->repo->save($this->createCheck(urlId: 1, statusCode: 200, createdAt: Carbon::now()));
+        $this->repo->save($this->createCheck(
             urlId: 1,
             statusCode: 404,
             createdAt:
             Carbon::now()->addSecond()
         ));
 
-        $lastCode = $this->repository->findLastStatusCodeByUrlId(1);
+        $lastCode = $this->repo->findLastStatusCodeByUrlId(1);
         $this->assertSame(404, $lastCode);
     }
 }

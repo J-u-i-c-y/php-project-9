@@ -2,20 +2,36 @@
 
 namespace Hexlet\Code;
 
+use Carbon\Carbon;
+
 class Url
 {
     private ?int $id = null;
     private ?string $name = null;
-    private ?string $createdAt = null;
+    private ?Carbon $createdAt = null;
     private ?int $lastCheckCode = null;
     private ?string $lastCheckDate = null;
+
+    public function __construct(string $name, ?int $id = null, ?Carbon $createdAt = null)
+    {
+        $this->name = self::normalizeName($name);
+        $this->id = $id;
+        $this->createdAt = $createdAt ?? Carbon::now();
+    }
+
+    public static function normalizeName(string $name): string
+    {
+        $parsed = parse_url(trim($name));
+        if (!isset($parsed['scheme']) || !isset($parsed['host'])) {
+            throw new \InvalidArgumentException("Invalid URL");
+        }
+        return "{$parsed['scheme']}://{$parsed['host']}";
+    }
 
     public static function fromArray(array $urlData): Url
     {
         [$name] = $urlData;
-        $url = new Url();
-        $url->setName($name);
-        return $url;
+        return new Url($name);
     }
 
     public function getId(): ?int
@@ -28,7 +44,7 @@ class Url
         return $this->name;
     }
 
-    public function getCreatedAt(): ?string
+    public function getCreatedAt(): ?Carbon
     {
         return $this->createdAt;
     }
@@ -38,7 +54,7 @@ class Url
         $this->id = $id;
     }
 
-    public function setCreatedAt(string $createdAt): void
+    public function setCreatedAt(Carbon $createdAt): void
     {
         $this->createdAt = $createdAt;
     }

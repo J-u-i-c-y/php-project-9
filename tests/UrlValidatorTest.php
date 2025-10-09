@@ -32,9 +32,9 @@ class UrlValidatorTest extends TestCase
 
     public function testUrlExceedsMaxLengthReturnsError()
     {
-        $longUrl = 'https://' . str_repeat('a', 250) . '.com';
-        $data = ['name' => $longUrl];
-        $errors = UrlValidator::validate($data);
+        $validator = new UrlValidator();
+        $longUrl = 'https://' . str_repeat('a', 256) . '.com';
+        $errors = $validator->validate(['name' => $longUrl]);
         $this->assertNotEmpty($errors);
         $this->assertContains('URL не должен превышать 255 символов', $errors);
     }

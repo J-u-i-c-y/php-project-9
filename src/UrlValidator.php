@@ -2,33 +2,22 @@
 
 namespace Hexlet\Code;
 
+use Valitron\Validator;
+
 class UrlValidator
 {
-    public function validate(array $urlData): array
+    public static function validate(array $urlData): array
     {
-        $errors = [];
-        $wrongEmail = "Некорректный URL";
+        $v = new Validator($urlData);
+        $v->rule('required', 'name')->message('URL не должен быть пустым');
+        $v->rule('url', 'name')->message('Некорректный URL');
+        $v->rule('lengthMax', 'name', 255)->message('URL не должен превышать 255 символов');
 
-        $url = parse_url($urlData['name']);
-        $scheme = $url['scheme'] ?? '';
-        $host = $url['host'] ?? '';
-
-        if (empty($urlData['name'])) {
-            $errors[] = 'URL не должен быть пустым';
+        if (!$v->validate()) {
+            // Возвращаем просто список ошибок
+            return array_merge(...array_values($v->errors()));
         }
 
-        if (empty($scheme) || empty($host)) {
-            $errors[] = $wrongEmail;
-        }
-
-        if ($scheme !== 'http' && $scheme !== 'https') {
-            $errors[] = $wrongEmail;
-        }
-
-        if (!str_starts_with($urlData['name'], 'http://') && !str_starts_with($urlData['name'], 'https://')) {
-            $errors[] = $wrongEmail;
-        }
-
-        return $errors;
+        return [];
     }
 }

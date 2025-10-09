@@ -4,13 +4,13 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 use Hexlet\Code\Url;
-use Hexlet\Code\UrlsRepository;
+use Hexlet\Code\UrlRepo;
 use PDO;
 
-class UrlsRepositoryTest extends TestCase
+class UrlRepoTest extends TestCase
 {
     private PDO $pdo;
-    private UrlsRepository $repository;
+    private UrlRepo $repo;
     public string $exampleUrl = 'https://example.com';
 
     protected function setUp(): void
@@ -18,15 +18,10 @@ class UrlsRepositoryTest extends TestCase
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->pdo->exec('
-            CREATE TABLE urls (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                created_at TEXT
-            )
-        ');
+        $schema = file_get_contents(__DIR__ . '/database_sqlite.sql');
+        $this->pdo->exec($schema);
 
-        $this->repository = new UrlsRepository($this->pdo);
+        $this->repo = new UrlRepo($this->pdo);
     }
 
     private function createUrl(?string $name = null): Url
@@ -35,7 +30,7 @@ class UrlsRepositoryTest extends TestCase
             $name = $this->exampleUrl;
         }
         $url = new Url($name);
-        $this->repository->save($url);
+        $this->repo->save($url);
         return $url;
     }
 
@@ -44,13 +39,13 @@ class UrlsRepositoryTest extends TestCase
         $savedUrl = $this->createUrl();
 
         $this->assertNotNull($savedUrl->getId());
-        $this->assertSame($exampleUrl, $savedUrl->getName());
+        $this->assertSame($this->exampleUrl, $savedUrl->getName());
     }
 
     public function testFindExistingUrl(): void
     {
         $savedUrl = $this->createUrl();
-        $foundUrl = $this->repository->find($savedUrl->getId());
+        $foundUrl = $this->repo->find($savedUrl->getId());
 
         $this->assertNotNull($foundUrl);
         $this->assertSame($savedUrl->getId(), $foundUrl->getId());
@@ -59,18 +54,18 @@ class UrlsRepositoryTest extends TestCase
 
     public function testFindNonExistingUrlReturnsNull(): void
     {
-        $this->assertNull($this->repository->find(999));
+        $this->assertNull($this->repo->find(999));
     }
 
     public function testFindByName(): void
     {
         $this->createUrl();
 
-        $foundUrl = $this->repository->findByName($exampleUrl);
+        $foundUrl = $this->repo->findByName($this->exampleUrl);
         $this->assertNotNull($foundUrl);
-        $this->assertSame($exampleUrl, $foundUrl->getName());
+        $this->assertSame($this->exampleUrl, $foundUrl->getName());
 
-        $this->assertNull($this->repository->findByName('https://nonexistent.com'));
+        $this->assertNull($this->repo->findByName('https://nonexistent.com'));
     }
 
     public function testAllReturnsArrayOfUrls(): void
@@ -78,7 +73,7 @@ class UrlsRepositoryTest extends TestCase
         $this->createUrl('https://example1.com');
         $this->createUrl('https://example2.com');
 
-        $allUrls = $this->repository->all();
+        $allUrls = $this->repo->all();
         $this->assertIsArray($allUrls);
         $this->assertCount(2, $allUrls);
         $this->assertSame('https://example1.com', $allUrls[0]->getName());

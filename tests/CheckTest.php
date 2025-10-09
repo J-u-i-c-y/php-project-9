@@ -11,7 +11,7 @@ class CheckTest extends TestCase
     public function testConstructorSetsAllFields(): void
     {
         $createdAt = new \Carbon\Carbon('2024-01-01 12:00:00');
-        $check = new \App\Check(
+        $check = new \Hexlet\Code\Check(
             urlId: 1,
             id: 123,
             statusCode: 200,
