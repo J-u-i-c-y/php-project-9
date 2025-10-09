@@ -57,7 +57,6 @@ class Check
             $this->setH1($document->first('h1')?->text() ?? null);
             $this->setTitle($document->first('title')?->text() ?? null);
             $this->setDescription($document->first('meta[name=description]')?->getAttribute('content'));
-
         } catch (ConnectException $e) {
             return null;
         } catch (RequestException $e) {

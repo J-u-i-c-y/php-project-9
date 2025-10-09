@@ -40,7 +40,7 @@ class UrlRepo
             ORDER BY url_id, created_at DESC
         ";
         $stmtChecks = $this->conn->query($sqlChecks);
-        
+
         if ($stmtChecks === false) {
             throw new \RuntimeException('Ошибка запроса к базе данных');
         }
