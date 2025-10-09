@@ -82,7 +82,7 @@ $app->post(
     '/urls',
     function ($req, $res) use ($router) {
     $urlRepo = $this->get(UrlRepo::class);
-    $urlData = $req->getParsedBodyParam('url');
+    $urlData = $req->getParsedBodyParam('url') ?? [];
     $errors = UrlValidator::validate($urlData);
 
     if (!empty($errors)) {
