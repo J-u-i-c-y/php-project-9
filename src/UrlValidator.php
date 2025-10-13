@@ -15,7 +15,12 @@ class UrlValidator
 
         if (!$v->validate()) {
             $errors = $v->errors();
-            return !empty($errors) ? array_merge(...array_values($errors)) : [];
+
+            if (is_array($errors) && !empty($errors)) {
+                return array_merge(...array_values($errors));
+            }
+
+            return [];
         }
 
         return [];

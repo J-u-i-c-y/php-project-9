@@ -130,6 +130,11 @@ class UrlRepo
     public function all(): array
     {
         $stmt = $this->conn->query("SELECT * FROM urls");
+
+        if ($stmt === false) {
+            throw new \RuntimeException('Ошибка выполнения SQL-запроса: SELECT * FROM urls');
+        }
+
         $urls = [];
         while ($row = $stmt->fetch()) {
             $urls[] = new Url(
@@ -145,6 +150,11 @@ class UrlRepo
     {
         $sql = "SELECT * FROM urls WHERE name = :name";
         $stmt = $this->conn->prepare($sql);
+
+        if ($stmt === false) {
+            throw new \RuntimeException('Ошибка подготовки SQL-запроса: SELECT * FROM urls WHERE name = :name');
+        }
+
         $name = $url->getName();
         $stmt->bindParam($this->nameParam, $name);
         $stmt->execute();
@@ -157,4 +167,5 @@ class UrlRepo
 
         return false;
     }
+
 }
