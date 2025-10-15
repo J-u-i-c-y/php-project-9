@@ -3,8 +3,8 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Hexlet\Code\Check;
-use Hexlet\Code\CheckRepo;
+use Hexlet\Code\Entities\Check;
+use Hexlet\Code\Repositories\CheckRepo;
 use PDO;
 use Carbon\Carbon;
 

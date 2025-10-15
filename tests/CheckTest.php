@@ -3,7 +3,7 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Hexlet\Code\Check;
+use Hexlet\Code\Entities\Check;
 use Carbon\Carbon;
 
 class CheckTest extends TestCase
@@ -11,7 +11,7 @@ class CheckTest extends TestCase
     public function testConstructorSetsAllFields(): void
     {
         $createdAt = new \Carbon\Carbon('2024-01-01 12:00:00');
-        $check = new \Hexlet\Code\Check(
+        $check = new \Hexlet\Code\Entities\Check(
             urlId: 1,
             id: 123,
             statusCode: 200,

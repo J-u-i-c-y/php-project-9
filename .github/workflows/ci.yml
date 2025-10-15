@@ -1,0 +1,49 @@
+name: PHP CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mydb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, pdo_pgsql, dom, curl
+        coverage: none
+
+    - name: Install dependencies
+      run: composer install --no-progress --prefer-dist
+
+    - name: Run PHPStan
+      run: composer run-script phpstan
+
+    - name: Run tests
+      env:
+        DATABASE_URL: "pgsql://postgres:postgres@127.0.0.1:5432/mydb"
+      run: composer test

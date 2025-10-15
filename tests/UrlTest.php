@@ -3,7 +3,7 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Hexlet\Code\Url;
+use Hexlet\Code\Entities\Url;
 use Carbon\Carbon;
 
 class UrlTest extends TestCase

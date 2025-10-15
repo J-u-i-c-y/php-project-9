@@ -3,13 +3,12 @@
 use Slim\Factory\AppFactory;
 use Slim\Middleware\MethodOverrideMiddleware;
 use DI\Container;
-use Illuminate\Support\Collection;
-use Hexlet\Code\Url;
-use Hexlet\Code\UrlRepo;
-use Hexlet\Code\UrlValidator;
-use Hexlet\Code\UrlNormalize;
-use Hexlet\Code\Check;
-use Hexlet\Code\CheckRepo;
+use Hexlet\Code\Entities\Url;
+use Hexlet\Code\Repositories\UrlRepo;
+use Hexlet\Code\Services\UrlValidator;
+use Hexlet\Code\Services\UrlNormalize;
+use Hexlet\Code\Entities\Check;
+use Hexlet\Code\Repositories\CheckRepo;
 use Dotenv\Dotenv;
 
 require_once __DIR__ . '/../vendor/autoload.php';

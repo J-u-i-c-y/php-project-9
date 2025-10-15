@@ -1,6 +1,6 @@
 <?php
 
-namespace Hexlet\Code;
+namespace Hexlet\Code\Services;
 
 use Valitron\Validator;
 
@@ -13,16 +13,16 @@ class UrlValidator
         $v->rule('url', 'name')->message('Некорректный URL');
         $v->rule('lengthMax', 'name', 255)->message('URL не должен превышать 255 символов');
 
+        $errors = [];
+
         if (!$v->validate()) {
-            $errors = $v->errors();
+            $rawErrors = $v->errors();
 
-            if (is_array($errors) && !empty($errors)) {
-                return array_merge(...array_values($errors));
+            if (is_array($rawErrors) && !empty($rawErrors)) {
+                $errors = array_merge(...array_values($rawErrors));
             }
-
-            return [];
         }
 
-        return [];
+        return $errors;
     }
 }

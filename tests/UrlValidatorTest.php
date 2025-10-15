@@ -3,7 +3,7 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Hexlet\Code\UrlValidator;
+use Hexlet\Code\Services\UrlValidator;
 
 class UrlValidatorTest extends TestCase
 {

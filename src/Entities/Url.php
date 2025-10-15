@@ -1,14 +1,14 @@
 <?php
 
-namespace Hexlet\Code;
+namespace Hexlet\Code\Entities;
 
 use Carbon\Carbon;
 
 class Url
 {
-    private ?int $id = null;
-    private ?string $name = null;
-    private ?Carbon $createdAt = null;
+    private ?int $id;
+    private ?string $name;
+    private ?Carbon $createdAt;
     private ?int $lastCheckCode = null;
     private ?string $lastCheckDate = null;
 

@@ -3,8 +3,9 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Hexlet\Code\Url;
-use Hexlet\Code\UrlRepo;
+use Hexlet\Code\Entities\Url;
+use Hexlet\Code\Repositories\UrlRepo;
+use Carbon\Carbon;
 use PDO;
 
 class UrlRepoTest extends TestCase
@@ -18,7 +19,7 @@ class UrlRepoTest extends TestCase
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $schema = file_get_contents(__DIR__ . '/database_sqlite.sql');
+        $schema = file_get_contents(__DIR__ . '/../database.sql');
         $this->pdo->exec($schema);
 
         $this->repo = new UrlRepo($this->pdo);

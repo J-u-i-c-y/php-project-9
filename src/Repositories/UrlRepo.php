@@ -1,8 +1,9 @@
 <?php
 
-namespace Hexlet\Code;
+namespace Hexlet\Code\Repositories;
 
 use Carbon\Carbon;
+use Hexlet\Code\Entities\Url;
 
 class UrlRepo
 {
