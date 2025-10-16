@@ -30,7 +30,8 @@
         }
     },
     "scripts": {
-        "start": "PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public"
+        "start": "PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public",
+        "phpstan": "vendor/bin/phpstan analyse src --level max"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",
