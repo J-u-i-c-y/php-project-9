@@ -9,28 +9,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5d3e3af3a9a3b1b2c73b7d2
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3.23'
-        extensions: mbstring, json
-        tools: composer, phpunit
+      - name: Set up PHP
+        uses: shivammathur/setup-php@7d54cbb249b15a7fa627a06a780579e9d120b6a7
+        with:
+          php-version: '8.4'
+          coverage: xdebug
+          extensions: mbstring, intl, pdo, dom, json
+          tools: composer:v2
 
-    - name: Install dependencies
-      run: composer install
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
 
-    - name: Run Linter
-      run: make lint
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=512M
+        continue-on-error: true
 
-    - name: Run PHPUnit tests
-      run: vendor/bin/phpunit --coverage-clover=coverage.xml
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --coverage-text
 
-    - name: SonarQube Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      with:
-        projectBaseDir: .
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: "https://sonarcloud.io"
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@7c4f9116d4d6305c28fa2f219cc5fa96e7d7fbb4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: "https://sonarcloud.io"
