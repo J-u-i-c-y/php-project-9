@@ -7,8 +7,8 @@ use Carbon\Carbon;
 class Url
 {
     private ?int $id;
-    private ?string $name;
-    private ?Carbon $createdAt;
+    private string $name;
+    private Carbon $createdAt;
     private ?int $lastCheckCode = null;
     private ?string $lastCheckDate = null;
 
@@ -61,7 +61,7 @@ class Url
 
     public function setName(string $name): void
     {
-        $this->name = $name;
+        $this->name = self::normalizeName($name);
     }
 
     public function getLastCheckCode(): ?int
@@ -86,6 +86,6 @@ class Url
 
     public function exists(): bool
     {
-        return !is_null($this->getId());
+        return $this->id !== null;
     }
 }

@@ -4,7 +4,6 @@ namespace Hexlet\Code\Entities;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\ConnectException;
 use DiDom\Document;
 use Carbon\Carbon;
 use Psr\Http\Message\ResponseInterface;
@@ -47,22 +46,27 @@ class Check
     {
         return $this->urlId;
     }
+
     public function getStatusCode(): ?int
     {
         return $this->statusCode;
     }
+
     public function getH1(): ?string
     {
         return $this->h1;
     }
+
     public function getTitle(): ?string
     {
         return $this->title;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
     }
+
     public function getCreatedAt(): Carbon
     {
         return $this->createdAt;
@@ -72,26 +76,32 @@ class Check
     {
         $this->id = $id;
     }
+
     public function setUrlId(int $urlId): void
     {
         $this->urlId = $urlId;
     }
+
     public function setStatusCode(?int $statusCode): void
     {
         $this->statusCode = $statusCode;
     }
+
     public function setH1(?string $h1): void
     {
         $this->h1 = $h1;
     }
+
     public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
+
     public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
+
     public function setCreatedAt(Carbon $createdAt): void
     {
         $this->createdAt = $createdAt;
@@ -102,7 +112,7 @@ class Check
         return $this->id !== null;
     }
 
-    public static function fromArray(array $checkData): Check
+    public static function fromArray(array $checkData): self
     {
         [$urlId] = $checkData;
         return new self($urlId);
@@ -113,12 +123,9 @@ class Check
         $client = new Client(['timeout' => 6]);
 
         try {
-            /** @var ResponseInterface $response */
             $response = $client->request('GET', $urlName);
             $status = $response->getStatusCode();
             $body = (string) $response->getBody();
-        } catch (ConnectException | \Throwable $e) {
-            return null;
         } catch (RequestException $e) {
             $resp = $e->getResponse();
             if ($resp instanceof ResponseInterface) {
@@ -127,6 +134,8 @@ class Check
             } else {
                 return null;
             }
+        } catch (\Throwable) {
+            return null;
         }
 
         $this->setStatusCode($status);
@@ -136,7 +145,6 @@ class Check
         }
 
         $document = new Document($body);
-
         $this->setH1($this->getTextSafe($document->first('h1')));
         $this->setTitle($this->getTextSafe($document->first('title')));
         $this->setDescription($this->getMetaSafe($document->first('meta[name=description]')));
@@ -144,22 +152,22 @@ class Check
         return $this;
     }
 
-    private function getTextSafe($element): ?string
+    private function getTextSafe(Element|\DOMElement|null $element): ?string
     {
-        return match (true) {
-            $element instanceof Element => trim($element?->text() ?? ''),
-            $element instanceof \DOMElement => trim($element?->nodeValue ?? ''),
-            default => null,
-        };
+        if ($element instanceof Element) {
+            return trim($element->text() ?? '');
+        }
+        if ($element instanceof \DOMElement) {
+            return trim($element->nodeValue ?? '');
+        }
+        return null;
     }
 
-    private function getMetaSafe($element): ?string
+    private function getMetaSafe(Element|\DOMElement|null $element): ?string
     {
-        return match (true) {
-            $element instanceof Element,
-            $element instanceof \DOMElement =>
-                trim($element?->getAttribute('content') ?? ''),
-            default => null,
-        };
+        if ($element instanceof Element || $element instanceof \DOMElement) {
+            return trim($element->getAttribute('content') ?? '');
+        }
+        return null;
     }
 }

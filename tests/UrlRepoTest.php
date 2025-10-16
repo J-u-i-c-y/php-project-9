@@ -19,7 +19,24 @@ class UrlRepoTest extends TestCase
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $schema = file_get_contents(__DIR__ . '/../database.sql');
+         $schema = file_get_contents(__DIR__ . '/../database.sql');
+
+        $schema = str_replace(
+            [
+                'BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY',
+                'VARCHAR(255)',
+                'TIMESTAMP WITHOUT TIME ZONE',
+                'REFERENCES urls(id) ON DELETE CASCADE'
+            ],
+            [
+                'INTEGER PRIMARY KEY AUTOINCREMENT',
+                'TEXT',
+                'TEXT',
+                '' // SQLite не требует ON DELETE CASCADE здесь, добавлять по необходимости
+            ],
+            $schema
+        );
+
         $this->pdo->exec($schema);
 
         $this->repo = new UrlRepo($this->pdo);
