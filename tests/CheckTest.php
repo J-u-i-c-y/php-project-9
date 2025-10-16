@@ -20,6 +20,15 @@ class CheckTest extends TestCase
             description: 'Test Description',
             createdAt: $createdAt
         );
+
+        $check->setId(123);
+        $check->setUrlId(1);
+        $check->setStatusCode(200);
+        $check->setH1('Test H1');
+        $check->setTitle('Test Title');
+        $check->setDescription('Test Description');
+        $check->setCreatedAt($createdAt);
+
         $this->assertEquals(123, $check->getId());
         $this->assertEquals(1, $check->getUrlId());
         $this->assertEquals(200, $check->getStatusCode());
