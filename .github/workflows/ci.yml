@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a0b4d5f4b6
+        uses: actions/checkout@v4
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@4e8cd5fcdee22db63da68a879b64b5a16f5225b2
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           coverage: xdebug
@@ -31,7 +31,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-text
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@7c4f9116d4d6305c28fa2f219cc5fa96e7d7fbb4
+        uses: SonarSource/sonarcloud-gh-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: "https://sonarcloud.io"
