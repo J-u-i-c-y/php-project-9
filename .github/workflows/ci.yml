@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@eef61447b9ff4aafe5d3e3af3a9a3b1b2c73b7d2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a0b4d5f4b6
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@7d54cbb249b15a7fa627a06a780579e9d120b6a7
+        uses: shivammathur/setup-php@4e8cd5fcdee22db63da68a879b64b5a16f5225b2
         with:
           php-version: '8.4'
           coverage: xdebug
