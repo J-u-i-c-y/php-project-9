@@ -155,18 +155,20 @@ class Check
     private function getTextSafe(Element|\DOMElement|null $element): ?string
     {
         if ($element instanceof Element) {
-            return trim($element->text());
+            $text = $element->text();
+        } elseif ($element instanceof \DOMElement) {
+            $text = $element->nodeValue;
+        } else {
+            return null;
         }
-        if ($element instanceof \DOMElement) {
-            return trim($element->nodeValue);
-        }
-        return null;
+        return $text !== null ? trim($text) : null;
     }
 
     private function getMetaSafe(Element|\DOMElement|null $element): ?string
     {
         if ($element instanceof Element || $element instanceof \DOMElement) {
-            return trim($element->getAttribute('content'));
+            $content = $element->getAttribute('content');
+            return $content !== null ? trim($content) : null;
         }
         return null;
     }
